@@ -1,10 +1,12 @@
 <template>
   <div class="col-3">
-    <router-link :to="{ name:'user' , params: {id: user.id} }">
+    <router-link :to="{ name: 'user', params: { id: user.id } }">
       <img :src="user.image" width="140px" height="140px" />
     </router-link>
     <h2>{{ user.name }}</h2>
-    <span class="badge badge-secondary">追蹤人數：{{ user.followerCount }}</span>
+    <span class="badge badge-secondary"
+      >追蹤人數：{{ user.followerCount }}</span
+    >
     <p class="mt-3">
       <button
         v-if="user.isFollowed"
@@ -31,27 +33,27 @@ export default {
   props: {
     initialUser: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
-  data () {
+  data() {
     return {
-      user: this.initialUser
-    }
+      user: this.initialUser,
+    };
   },
   methods: {
     deleteFollow() {
       this.user = {
         ...this.user,
-        isFollowed: false
-      }
+        isFollowed: false,
+      };
     },
     addFollow() {
       this.user = {
         ...this.user,
-        isFollowed: true
-      }
-    }
-  }
-}
+        isFollowed: true,
+      };
+    },
+  },
+};
 </script>

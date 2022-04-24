@@ -2,29 +2,25 @@
   <div class="album py-5 bg-light">
     <div class="container">
       <!-- UserProfileCard -->
-      <UserProfileCard 
+      <UserProfileCard
         :profile="profile"
+        :initial-is-followed="isFollowed"
+        :current-user="currentUser"
       />
       <div class="row">
         <div class="col-md-4">
           <!-- UserFollowingCard -->
-          <UserFollowingsCard 
-            :followings="followings"
-          />
+          <UserFollowingsCard :followings="followings" />
           <br />
           <!-- UserFollowersCard -->
-          <UserFollowersCard 
-            :followers="followers"
-          />
+          <UserFollowersCard :followers="followers" />
         </div>
         <div class="col-md-8">
           <!-- UserCommentsCard -->
-          <UserCommentsCard 
-            :comments="comments"
-          />
+          <UserCommentsCard :comments="comments" />
           <br />
           <!-- UserFavoritedRestaurantsCard -->
-          <UserFavoritedRestaurantsCard 
+          <UserFavoritedRestaurantsCard
             :favorited-restaurants="favoritedRestaurants"
           />
         </div>
@@ -1297,6 +1293,16 @@ const dummyData = {
   },
   isFollowed: false,
 };
+const dummyUser = {
+  currentUser: {
+    id: 1,
+    name: "管理者",
+    email: "root@example.com",
+    image: "https://i.pravatar.cc/300",
+    isAdmin: true,
+  },
+  isAuthenticated: true,
+};
 
 export default {
   name: "User",
@@ -1311,18 +1317,20 @@ export default {
     return {
       profile: {
         id: -1,
-        name: '',
-        email: '',
-        image: '',
+        name: "",
+        email: "",
+        image: "",
         commentsLength: 0,
         favoritedRestaurantsLength: 0,
         followersLength: 0,
-        followingsLength: 0 
+        followingsLength: 0,
       },
+      isFollowed: false,
       comments: [],
       favoritedRestaurants: [],
       followers: [],
       followings: [],
+      currentUser: dummyUser.currentUser,
     };
   },
   created() {
@@ -1340,8 +1348,8 @@ export default {
         Comments,
         FavoritedRestaurants,
         Followers,
-        Followings
-      } = dummyData.profile
+        Followings,
+      } = dummyData.profile;
 
       this.profile = {
         id,
@@ -1351,12 +1359,13 @@ export default {
         commentsLength: Comments.length,
         favoritedRestaurantsLength: FavoritedRestaurants.length,
         followersLength: Followers.length,
-        followingsLength: Followings.length 
-      }
-      this.comments = Comments
-      this.favoritedRestaurants = FavoritedRestaurants
-      this.followers = Followers
-      this.followings = Followings
+        followingsLength: Followings.length,
+      };
+      this.isFollowed = dummyData.isFollowed;
+      this.comments = Comments;
+      this.favoritedRestaurants = FavoritedRestaurants;
+      this.followers = Followers;
+      this.followings = Followings;
     },
   },
 };
