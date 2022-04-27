@@ -15,7 +15,7 @@
           <router-link
             :to="{ name: 'restaurant', params: { id: restaurant.id } }"
           >
-            <img class="card-img" :src="restaurant.image" />
+            <img class="card-img" :src="restaurant.image | emptyImage" />
           </router-link>
         </div>
         <div class="col-md-8">
@@ -60,6 +60,7 @@
 
 <script>
 import NavTabs from "./../components/NavTabs";
+import { emptyImageFilter } from "./../utils/mixins";
 
 const dummyData = {
   restaurants: [
@@ -241,6 +242,7 @@ export default {
   components: {
     NavTabs,
   },
+  mixins: [emptyImageFilter],
   data() {
     return {
       restaurants: [],
@@ -254,28 +256,26 @@ export default {
       this.restaurants = dummyData.restaurants;
     },
     addFavorite(id) {
-      this.restaurants = this.restaurants
-      .map(restaurant => {
+      this.restaurants = this.restaurants.map((restaurant) => {
         if (restaurant.id !== id) {
-          return restaurant
+          return restaurant;
         }
         return {
           ...restaurant,
-          isFavorited: true
-        }
-      }) 
+          isFavorited: true,
+        };
+      });
     },
     deleteFavorite(id) {
-      this.restaurants = this.restaurants
-      .map(restaurant => {
+      this.restaurants = this.restaurants.map((restaurant) => {
         if (restaurant.id !== id) {
-          return restaurant
+          return restaurant;
         }
         return {
           ...restaurant,
-          isFavorited: false
-        }
-      })
+          isFavorited: false,
+        };
+      });
     },
   },
 };
