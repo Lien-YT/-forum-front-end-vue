@@ -38,55 +38,10 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import AdminNav from "./../components/AdminNav";
-
-const dummyData = {
-  users: [
-    {
-      id: 1,
-      name: "root",
-      email: "root@example.com",
-      password: "$2a$10$/pJLK/1.61hJO9f7H3HKQOqSU5ERyiLzimg/e1WfnlPdoIqLv89ta",
-      isAdmin: true,
-      image: null,
-      createdAt: "2022-04-18T08:11:33.000Z",
-      updatedAt: "2022-04-18T08:11:33.000Z",
-    },
-    {
-      id: 2,
-      name: "user1",
-      email: "user1@example.com",
-      password: "$2a$10$.daIm2U.cnzxk180nYmyOuVqCh9cOVFp5QDyMWnWkb6OlyHlDzuCu",
-      isAdmin: true,
-      image: null,
-      createdAt: "2022-04-18T08:11:33.000Z",
-      updatedAt: "2022-04-18T08:11:33.000Z",
-    },
-    {
-      id: 3,
-      name: "user2",
-      email: "user2@example.com",
-      password: "$2a$10$ztyApNPvWeiSXqh/lATloetDBDyvSxd5W8CiYnykvd2K8KuN7gMAK",
-      isAdmin: false,
-      image: null,
-      createdAt: "2022-04-18T08:11:33.000Z",
-      updatedAt: "2022-04-18T08:11:33.000Z",
-    },
-  ],
-};
-const dummyUser = {
-  user: {
-    id: 1,
-    name: "root",
-    email: "root@example.com",
-    password: "$2a$10$/pJLK/1.61hJO9f7H3HKQOqSU5ERyiLzimg/e1WfnlPdoIqLv89ta",
-    isAdmin: true,
-    image: null,
-    createdAt: "2022-04-18T08:11:33.000Z",
-    updatedAt: "2022-04-18T08:11:33.000Z",
-    Comments: [],
-  },
-};
+import adminAPI from "./../apis/admin";
+import { Toast } from "./../utils/helpers";
 
 export default {
   name: "AdminUsers",
@@ -95,33 +50,59 @@ export default {
   },
   data() {
     return {
-      users: {
-        id: -1,
-        email: "",
-        isAdmin: false,
-      },
-      currentUser: dummyUser.user,
+      users: [],
+      isLoading: true,
     };
+  },
+  computed: {
+    ...mapState(["currentUser"]),
   },
   created() {
     this.fetchUsers();
   },
   methods: {
-    fetchUsers() {
-      this.users = dummyData.users.map((user) => ({
-        ...user,
-      }));
-    },
-    toggleUserRole({ userId, isAdmin }) {
-      this.users = this.users.map(user => {
-        if (user.id === userId) {
-          return {
-            ...user,
-            isAdmin: !isAdmin,
-          };
+    async fetchUsers() {
+      try {
+        const { data } = await adminAPI.users.get();
+        if (data.status === "error") {
+          throw new Error(data.message);
         }
-        return user;
-      });
+        this.users = data.users;
+        this.isLoading = false;
+      } catch (error) {
+        console.error(error.message);
+        this.isLoading = false;
+        Toast.fire({
+          icon: "error",
+          title: "無法取得會員資料，請稍後再試",
+        });
+      }
+    },
+    async toggleUserRole({ userId, isAdmin }) {
+      try {
+        const { data } = await adminAPI.users.update({
+          userId,
+          isAdmin: (!isAdmin).toString(),
+        });
+        if (data.status === "error") {
+          throw new Error(data.message);
+        }
+        this.users = this.users.map((user) => {
+          if (user.id === userId) {
+            return {
+              ...user,
+              isAdmin: !isAdmin,
+            };
+          }
+          return user;
+        });
+      } catch (error) {
+        console.error(error.message);
+        Toast.fire({
+          icon: "error",
+          title: "無法更新會員角色，請稍後再試",
+        });
+      }
     },
   },
 };
