@@ -123,6 +123,7 @@ export default {
   },
   methods: {
     fetchRestaurant(restaurantId) {
+      console.log('restaurantId', restaurantId)
       const { id, name, Category, Comments, viewCounts } = dummyData.restaurant;
       this.restaurant = {
         id,
