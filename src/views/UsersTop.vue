@@ -1,8 +1,8 @@
 <template>
   <div class="container py-5">
     <NavTabs />
-
-    <template>
+    <Spinner v-if="isLoading" />
+    <template v-else>
       <h1 class="mt-5">
         美食達人
       </h1>
@@ -29,6 +29,7 @@
               v-if="user.isFollowed"
               type="button"
               class="btn btn-danger"
+              :disabled="isProcessing"
               @click.stop.prevent="deleteFollowing(user.id)"
             >
               取消追蹤
@@ -37,6 +38,7 @@
               v-else
               type="button"
               class="btn btn-primary"
+              :disabled="isProcessing"
               @click.stop.prevent="addFollowing(user.id)"
             >
               追蹤
@@ -50,6 +52,7 @@
 
 <script>
 import NavTabs from './../components/NavTabs'
+import Spinner from './../components/Spinner'
 import { emptyImageFilter } from './../utils/mixins'
 import usersAPI from './../apis/users'
 import { Toast } from './../utils/helpers'
@@ -57,12 +60,15 @@ import { Toast } from './../utils/helpers'
 export default {
   name: 'UsersTop',
   components: {
-    NavTabs
+    NavTabs,
+    Spinner
   },
   mixins: [emptyImageFilter],
   data () {
     return {
       users: [],
+      isLoading: true,
+      isProcessing: false
     }
   },
   created () {
@@ -71,7 +77,9 @@ export default {
   methods: {
     async fetchTopUsers () {
       try {
+        this.isLoading = true
         const { data } = await usersAPI.getTopUsers()
+
         if (data.status === 'error') {
           throw new Error(data.message)
         }
@@ -82,7 +90,9 @@ export default {
           followerCount: user.FollowerCount,
           isFollowed: user.isFollowed
         }))
+        this.isLoading = false
       } catch (error) {
+        this.isLoading = false
         console.error(error.message)
         Toast.fire({
           icon: 'error',
@@ -92,6 +102,7 @@ export default {
     },
     async addFollowing (userId) {
       try {
+        this.isProcessing = true
         const { data } = await usersAPI.addFollowing({ userId })
         if (data.status !== 'success') {
           throw new Error(data.message)
@@ -107,7 +118,9 @@ export default {
             }
           }
         })
+        this.isProcessing = false
       } catch (error) {
+        this.isProcessing = false
         Toast.fire({
           icon: 'error',
           title: '無法加入追蹤，請稍後再試'
@@ -116,6 +129,7 @@ export default {
     },
     async deleteFollowing (userId) {
       try {
+        this.isProcessing = true
         const { data } = await usersAPI.deleteFollowing({ userId })
         if (data.status !== 'success') {
           throw new Error(data.message)
@@ -131,7 +145,9 @@ export default {
             }
           }
         })
+        this.isProcessing = false
       } catch (error) {
+        this.isProcessing = false
         Toast.fire({
           icon: 'error',
           title: '無法取消追蹤，請稍後再試'
@@ -141,3 +157,4 @@ export default {
   }
 }
 </script>
+

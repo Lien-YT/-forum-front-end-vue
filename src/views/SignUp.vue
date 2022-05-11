@@ -67,6 +67,7 @@
       <button
         class="btn btn-lg btn-primary btn-block mb-3"
         type="submit"
+        :disabled="isProcessing"
       >
         Submit
       </button>
@@ -97,6 +98,7 @@ export default {
       email: '',
       password: '',
       passwordCheck: '',
+      isProcessing: false,
     }
   },
   methods: {
@@ -123,6 +125,8 @@ export default {
           this.passwordCheck = ''
           return
         }
+
+        this.isProcessing = true
         const { data } = await authorizationAPI.signUp({
           name: this.name,
           email: this.email,
@@ -139,6 +143,7 @@ export default {
         // 成功登入後轉址到登入頁
         this.$router.push('/signin')
       } catch (error) {
+        this.isProcessing = false
         Toast.fire({
           icon: 'warning',
           title: `無法註冊 - ${error.message}`

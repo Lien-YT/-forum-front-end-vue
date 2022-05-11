@@ -31,7 +31,7 @@ export default {
   props: {
     favoriteRestaurants: {
       type: Array,
-      required: true,
+      default: () => []
     },
   },
   mixins: [emptyImageFilter],

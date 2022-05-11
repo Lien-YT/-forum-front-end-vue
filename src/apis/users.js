@@ -1,5 +1,4 @@
 import { apiHelper } from "../utils/helpers"
-const getToken = () => localStorage.getItem('token')
 
 export default {
   getCurrentUser() {
@@ -9,9 +8,7 @@ export default {
     return apiHelper.get(`/users/${userId}`)
   },
   getTopUsers() {
-    return apiHelper.get('/users/top'), {
-      headers: { Authorization: `Bearer ${getToken()}` }
-    }
+    return apiHelper.get('/users/top')
   },
   update({ userId, formData }) {
     return apiHelper.put(`/users/${userId}`, formData)
@@ -27,14 +24,10 @@ export default {
 
   // 以下為使用者對個別餐廳
   addFavorite({ restaurantId }) {
-    return apiHelper.post(`/favorite/${restaurantId}`, null, {
-      headers: { Authorization: `Bearer ${getToken()}` }
-    })
+    return apiHelper.post(`/favorite/${restaurantId}`, null)
   },
   deleteFavorite({ restaurantId }) {
-    return apiHelper.delete(`/favorite/${restaurantId}`, {
-      headers: { Authorization: `Bearer ${getToken()}` }
-    })
+    return apiHelper.delete(`/favorite/${restaurantId}`)
   },
   addLike({ restaurantId }) {
     return apiHelper.post(`/like/${restaurantId}`, null)

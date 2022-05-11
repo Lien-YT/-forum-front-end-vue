@@ -36,7 +36,7 @@
                 v-if="isFollowed === false"
                 type="submit"
                 class="btn btn-primary"
-                @click.stop.prevent="addFollowing(user.id)"
+                @click.stop.prevent="addFollowing(profile.id)"
               >
                 追蹤
               </button>
@@ -44,7 +44,7 @@
                 v-else
                 type="submit"
                 class="btn btn-danger"
-                @click.stop.prevent="deleteFollowing(user.id)"
+                @click.stop.prevent="deleteFollowing(profile.id)"
               >
                 取消追蹤
               </button>

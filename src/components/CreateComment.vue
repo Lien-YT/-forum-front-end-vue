@@ -18,6 +18,7 @@
       <button
         type="submit"
         class="btn btn-primary mr-0"
+        :disabled="isProcessing"
       >
         Submit
       </button>
@@ -26,7 +27,8 @@
 </template>
 
 <script>
-import { v4 as uuidv4 } from "uuid"
+import commentsAPI from './../apis/comments'
+import { Toast } from './../utils/helpers'
 
 export default {
   name: 'CreateComment',
@@ -39,18 +41,51 @@ export default {
   data () {
     return {
       text: '',
+      isProcessing: false
     }
   },
   methods: {
-    handleSubmit () {
-      // TODO: 向 API 發送 POST 請求
-      this.$emit('after-create-comment', {
-        commentId: uuidv4(), // from 後端
-        restaurantId: this.restaurantId,
-        text: this.text
-      })
-      this.text = ''
+    async handleSubmit() {
+      try {
+        if (!this.text) {
+          Toast.fire({
+            icon: 'warning',
+            title: '您尚未填寫任何評論'
+          })
+          return
+        }
+        this.isProcessing = true
+        const { data } = await commentsAPI.create({
+          restaurantId: this.restaurantId,
+          text: this.text
+        })
+        
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        } 
+
+        this.$emit('after-create-comment', {
+          commentId: data.commentId,
+          restaurantId: this.restaurantId,
+          text: this.text
+        })
+        this.isProcessing = false
+        this.text = ''
+      } catch (error) {
+        console.error(error.message)
+        this.isProcessing = false
+        Toast.fire({
+          icon: 'error',
+          title: '無法新增評論，請稍後再試'
+        })
+      }
     }
   }
 }
 </script>
+
+<style scoped>
+.form-group {
+  margin: 21px 0 8px;
+}
+</style>
